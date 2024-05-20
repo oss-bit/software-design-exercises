@@ -26,9 +26,8 @@ class FindUnusedVariables(ast.NodeVisitor):
     
 
     def visit_Name(self, node):
-        if isinstance(node.ctx, ast.Store) and node.id in self.stack[-1].store:
-            if self.stack[-1].store[node.id] - node.lineno < 3:
-                raise ValueError(f'Redundant assignment of varibale: {node.id} at line {node.lineno} and {self.stack[-1].store[node.id]}')
+        if isinstance(node.ctx, ast.Store) and node.id in self.stack[-1].store and self.stack[-1].store[node.id] - node.lineno < 3:
+            raise ValueError(f'Redundant assignment of varibale: {node.id} at line {node.lineno} and {self.stack[-1].store[node.id]}')
         elif isinstance(node.ctx, ast.Store):
             self.stack[-1].store[node.id] = node.lineno
         self.generic_visit(node)
