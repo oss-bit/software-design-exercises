@@ -1,6 +1,7 @@
 import ast
 import string
 import sys
+import re
 class CheckCase(ast.NodeVisitor):
     def visit_ClassDef(self, node):
         if not self.check_case('camel',node.name):
