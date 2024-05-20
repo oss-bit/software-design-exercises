@@ -3,35 +3,31 @@ import string
 import sys
 class CheckCase(ast.NodeVisitor):
     def visit_ClassDef(self, node):
-        if not self.check_case('camel',node):
+        if not self.check_case('camel',node.name):
             self.report('class', node)
         self.generic_visit(node)
        
 
     def visit_FunctionDef(self, node):
-        if not self.check_case('snake', node):
+        # print(node.args.args[0].arg)
+        if not self.check_case('snake', node.name):
             self.report('function', node)
         self.generic_visit(node)
 
     def visit_Name(self, node):
-        if not self.check_case('snake', node):
+        if not self.check_case('snake', node.id):
             self.report('variable', node)
         self.generic_visit(node)
 
     def report(self, type, node):
-        print(f'The {type}: {node.name} at line {node.lineno} does not follow naming conventions')
+        name = getattr(node, 'name', None) or getattr(node,'id', None)
+        print(f'The {type}: {name} at line {node.lineno} does not follow naming conventions')
 
-    def check_case(self, name, node):
-        letters = set(string.ascii_uppercase) & set(node.name)
-        print(letters)
-        print(node.name)
-        if name == 'camel':
-            return True if letters and not '_' in node.name else False
-        elif name == 'snake':
-            return True if '_' in node.name and len(letters) == 0 else False
-        else:
-            raise ValueError('Unknown case')    
-        
+    def check_case(self, case_type, name):
+        if case_type == 'camel':
+            return bool(re.match(r'^[A-Z][a-zA-Z]*$', name))
+        elif case_type == 'snake':
+            return bool(re.match(r'^[a-z_][a-z0-9_]*$', name))
 if __name__ =='__main__':
     with open(sys.argv[1], 'r') as reader:
         source = reader .read()
