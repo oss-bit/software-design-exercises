@@ -1,18 +1,24 @@
-'''Docstring.'''
+'''Finds  redundant variable defination (especially those that next to each other ) 
+    in a file and report 
+    example:
+        x = 5
+        x = 4
+    '''
 
 import ast
 from collections import namedtuple
 import sys
 
 
-# I would add a comment here to explain what Scope is for.  (It's a
-# shame Python doesn't let us attach docstrings to variable
-# declarations.)
+#represents a scope on the call stack indicating the name of the scope
 Scope = namedtuple("Scope", ["name", "store"])
 
 
-class FindUnusedVariables(ast.NodeVisitor):
-    '''Docstring.'''
+class FindRedundantAssignment(ast.NodeVisitor):
+    '''Uses the visitor pattern to traverse the tree to 
+        find all variable assignments in the given scope and
+        checks if there is a immediate varibale reassignment then reports it
+    '''
 
     def __init__(self):
         super().__init__()
@@ -34,20 +40,13 @@ class FindUnusedVariables(ast.NodeVisitor):
         self.stack.pop()
     
     def visit_Name(self, node):
-        # Wow, this is a long line. I would either split it across
-        # multiple lines or (more likely) move it into a helper method
-        # with a meaningful name. The same is true of the error
-        # message inside the ValueError: it's all useful information,
-        # but lines this long are hard to read. You can wrap it by
-        # writing several strings on adjacent lines with no commas
-        # between them:
-        # >>> x = ('first'
-        # ... 'second'
-        # ... 'third')
-        # >>> x
-        # 'firstsecondthird'
-        if isinstance(node.ctx, ast.Store) and node.id in self.stack[-1].store and self.stack[-1].store[node.id] - node.lineno < 3:
-            raise ValueError(f'Redundant assignment of variable: {node.id} at line {node.lineno} and {self.stack[-1].store[node.id]}')
+        if isinstance(node.ctx, ast.Store) and node.id in self.stack[-1].store \
+            and self.stack[-1].store[node.id] - node.lineno < 3:
+
+            raise ValueError('Redundant assignment of variable:' 
+                             f'{node.id} at line {node.lineno} \
+                                and {self.stack[-1].store[node.id]}')
+        
         elif isinstance(node.ctx, ast.Store):
             self.stack[-1].store[node.id] = node.lineno
         self.generic_visit(node)
@@ -57,5 +56,5 @@ if __name__ == '__main__':
     with open(sys.argv[1], 'r') as reader:
         source = reader .read()
     tree = ast.parse(source)
-    finder = FindUnusedVariables()
+    finder = FindRedundantAssignment()
     finder.visit(tree)

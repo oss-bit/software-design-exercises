@@ -1,26 +1,24 @@
-'''Docstring.'''
+'''Finds and  reports class and functions without docstrings'''
+
 
 import ast
 import sys
 
 
 class CheckDocStrings(ast.NodeVisitor):
-    '''Docstring.'''
+    '''Uses the ast.NodeVisitor to traverse the AST of the code and locate class and function defination'''
 
     def visit_FunctionDef(self, node):
-        if not ast.get_docstring(node):
-            self.report('function', node)    
-        self.generic_visit(node)
+        self._check_docstring('function', node)
 
     def visit_ClassDef(self,node):
-        if not ast.get_docstring(node):
-            self.report('class', node)
-        self.generic_visit(node)
+        self.check_docstring('class', node)        
 
-    # As in checking_names.py, I would write a helper method that
-    # `visit_FunctionDef` and `visit_ClassDef` call because their
-    # bodies are identical except for the constant strings 'function'
-    # and 'class'.
+    
+    def _check_docstring(self, node_type, node):
+        if not ast.get_docstring(node):
+            self.report(node_type, node)
+        self.generic_visit(node)
     
     def report(self, node_type, node):
         print(f'{node_type} {node.name} does not have a docstring')
