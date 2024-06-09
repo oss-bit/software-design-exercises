@@ -1,3 +1,6 @@
+# GVW: do you find the code easier or harder to understand without
+# spreading?
+
 class Cell:
     def render(self, screen, fill):
         for ix in range(self.get_width()):
@@ -80,7 +83,7 @@ class PlacedCol(Col,Placing):
             "col",
             self.x0, self.y0,
             self.x0 + self.get_width(), self.y0 + self.get_height(),
-            ] + [c.report() for c in self.children]
+        ] + [c.report() for c in self.children]
 
 class PlacedRow(Row, Placing):
     def __init__(self,children):
@@ -104,7 +107,7 @@ class PlacedRow(Row, Placing):
             self.y0,
             self.x0 + self.get_width(),
             self.y0 + self.get_height(),
-            ] + [c.report() for c in self.children]
+        ] + [c.report() for c in self.children]
 
 
 def render(root):
@@ -118,7 +121,7 @@ def render(root):
 def make_screen(width, height):
     screen = []
     for i in range(height):
-        screen.append([""]* width)
+        screen.append([""] * width)
     return screen
 
 def draw(screen, node, fill=None):

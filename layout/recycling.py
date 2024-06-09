@@ -79,7 +79,7 @@ class PlacedCol(Col,Placing):
             "col",
             self.x0, self.y0,
             self.x0 + self.get_width(), self.y0 + self.get_height(),
-            ] + [c.report() for c in self.children]
+        ] + [c.report() for c in self.children]
 
 class PlacedRow(Row, Placing):
     def __init__(self,children):
@@ -103,7 +103,7 @@ class PlacedRow(Row, Placing):
             self.y0,
             self.x0 + self.get_width(),
             self.y0 + self.get_height(),
-            ] + [c.report() for c in self.children]
+        ] + [c.report() for c in self.children]
 
 class WrappedBlock(PlacedBlock):
     def wrap(self):
